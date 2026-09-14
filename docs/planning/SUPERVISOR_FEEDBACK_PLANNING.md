@@ -1,4 +1,4 @@
-# PLANNING.md — Kế Hoạch Khắc Phục & Hoàn Thiện Theo Yêu Cầu Giảng Viên Hướng Dẫn
+# SUPERVISOR_FEEDBACK_PLANNING.md — Kế Hoạch Khắc Phục & Hoàn Thiện Theo Yêu Cầu Giảng Viên Hướng Dẫn
 
 - **Motivation/Background**: Bản kế hoạch hành động toàn diện được thiết kế trực tiếp từ các ghi chú góp ý và yêu cầu chỉnh sửa của Giảng viên hướng dẫn (GVHD) đối với đề tài nghiên cứu `deepfake-ViT`. Giải quyết triệt để 6 vấn đề học thuật cốt lõi: Mất cân bằng dữ liệu (TPA/SPA), Tiêu chí thực chiến $p\text{AUC}_{[0, 0.05]}$, Tuyển chọn checkpoint trên Validation, Đánh giá phân rã 44 phương pháp deepfake, Chiến lược chống bắt nhầm người thật (False Positives), và Mở "hộp đen" giải mã tín hiệu (Signal Attribution) của DINOv3 ViT + LoRA Fine-Tuning.
 - **Purpose**: Đóng vai trò là cẩm nang hành động kỹ thuật chi tiết nhất (Master Remediation Roadmap) để sinh viên và đội ngũ kỹ thuật thực thi từng bước, sửa mã nguồn, thực hiện thực nghiệm bổ sung, cập nhật tài liệu báo cáo và chuẩn bị kịch bản trả lời phản biện xuất sắc trước hội đồng chấm đồ án/khóa luận.
@@ -325,7 +325,7 @@ Thay vì báo cáo điểm số chung chung, mô hình được phân rã chi ti
 Dưới đây là danh sách đầu việc được đánh mã số theo quy chuẩn kỹ thuật để bạn và agent có thể thực thi tuần tự:
 
 - [x] **ACT-01**: Biên soạn tài liệu dữ liệu toàn diện [docs/DATA.md](../docs/DATA.md) (Đã hoàn thành 631 dòng).
-- [x] **ACT-02**: Viết kế hoạch tổng thể [agents/PLANNING.md](PLANNING.md) bám sát feedback GVHD (Đã hoàn thành 377 dòng).
+- [x] **ACT-02**: Viết kế hoạch tổng thể [docs/planning/SUPERVISOR_FEEDBACK_PLANNING.md](SUPERVISOR_FEEDBACK_PLANNING.md) bám sát feedback GVHD (Đã hoàn thành 377 dòng).
 - [x] **ACT-03**: Xây dựng module tính toán metric thực chiến [`src/eval/pauc_metrics.py`](../src/eval/pauc_metrics.py):
   - Viết hàm `compute_partial_auc(y_true, y_prob, max_fpr=0.05)`.
   - Viết hàm `compute_tpr_at_fixed_fpr(y_true, y_prob, target_fpr)`.

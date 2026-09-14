@@ -46,7 +46,7 @@ header_md = """# FORENSIC VALUATION AND XAI REPORT
 - **Source Code**: [`src/eval/pauc_metrics.py`](../src/eval/pauc_metrics.py), [`src/models/dinov3_vit.py`](../src/models/dinov3_vit.py), [`src/models/dinov3_convnext.py`](../src/models/dinov3_convnext.py)
 - **Evaluation Scripts**: [`scripts/select_best_checkpoint.py`](../scripts/select_best_checkpoint.py), [`src/experiments/visualize_lora_signals.py`](../src/experiments/visualize_lora_signals.py)
 - **Checkpoints**: [`plus_v3_s1_best.pt`](../experiments/checkpoints/plus_v3_s1_best.pt), [`convnext_weakfix_v3.pt`](../experiments/checkpoints/convnext_weakfix_v3.pt)
-- **Governing Roadmap**: [`agents/PLANNING.md`](../agents/PLANNING.md)
+- **Governing Roadmap**: [`docs/planning/SUPERVISOR_FEEDBACK_PLANNING.md`](../docs/planning/SUPERVISOR_FEEDBACK_PLANNING.md)
 - **Data Specification**: [`docs/DATA.md`](../docs/DATA.md)"""
 cells.append(make_cell("markdown", header_md))
 

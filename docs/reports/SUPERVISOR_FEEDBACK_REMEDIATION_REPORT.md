@@ -18,7 +18,7 @@
 - **References**:
   - Mã nguồn: [`src/eval/pauc_metrics.py`](../../src/eval/pauc_metrics.py), [`scripts/select_best_checkpoint.py`](../../scripts/select_best_checkpoint.py), [`src/experiments/visualize_lora_signals.py`](../../src/experiments/visualize_lora_signals.py).
   - Notebook trực quan: [`notebooks/forensic_valuation_and_xai_report.ipynb`](../../notebooks/forensic_valuation_and_xai_report.ipynb).
-  - Tài liệu dữ liệu & kế hoạch: [`docs/DATA.md`](../DATA.md), [`agents/PLANNING.md`](../../agents/PLANNING.md).
+  - Tài liệu dữ liệu & kế hoạch: [`docs/DATA.md`](../DATA.md), [`docs/planning/SUPERVISOR_FEEDBACK_PLANNING.md`](../planning/SUPERVISOR_FEEDBACK_PLANNING.md).
   - Checkpoint models: [`plus_v3_s1_best.pt`](../../experiments/checkpoints/plus_v3_s1_best.pt), [`convnext_weakfix_v3.pt`](../../experiments/checkpoints/convnext_weakfix_v3.pt).
 - **Created**: 2026-09-12T20:15:00+07:00
 - **Last Updated**: 2026-09-12T20:15:00+07:00
@@ -66,7 +66,7 @@ Toàn bộ 6 góp ý trên đã được nhóm nghiên cứu tiếp thu toàn di
 | **3** | AUC trong ngưỡng $0 \to 5\%$ | Full ROC-AUC 0.99 là phi thực tế vì trong forensic cấm chạy ở $\text{FPR} > 5\%$. | Tích hợp **$p\text{AUC}_{[0, 0.05]}$** (chuẩn hóa McClish), đo đạc **$\text{TPR} @ \text{FPR}=1\%$** và **$\text{TPR} @ \text{FPR}=5\%$** theo chuẩn NIST. | [src/eval/pauc_metrics.py](../../src/eval/pauc_metrics.py), Cell 3 Notebook |
 | **4** | 3 checkpoint $\to$ Valuation | Nguy cơ "nhìn trộm test" (Data Snooping) khi chọn checkpoint tốt nhất. | Thiết lập quy trình thẩm định độc lập 12 chỉ số trên tập **Validation (6,000 ảnh cân bằng 1:1)**. Checkpoint A1 giảm $59.8\%$ lỗi $FN$. | [scripts/select_best_checkpoint.py](../../scripts/select_best_checkpoint.py), [Scorecard PNG](../../experiments/plots/checkpoint_selection_scorecard.png) |
 | **5** | So sánh từng loại deepfake | Báo cáo trung bình che giấu điểm yếu trên từng họ công nghệ. | Phân rã 44 phương pháp thành 5 nhóm công nghệ; giải thích bản chất Inductive Bias: ViT thắng áp đảo Diffusion (+13.1%), ConvNeXt thắng GAN/Swap. | Cell 5 Notebook, [docs/DATA.md §4](../DATA.md#4-phân-rã-chi-tiết-44-phương-pháp-deepfake-theo-5-chủng-loại) |
-| **6** | Chiến lược chống bắt nhầm | Bắt nhầm người thật (FP) là rủi ro chí mạng trong pháp lý và bảo mật. | Xây dựng **Hệ thống phòng vệ 5 tầng**: Ngưỡng tối ưu $\tau^* = 0.540$, Asymmetric Loss ($w_{\text{real}}=3.2$), Ensemble Fusion, Hard Negatives, Vùng nghi vấn. | Cell 6 Notebook, [agents/PLANNING.md §7](../../agents/PLANNING.md#7-chiến-lược-công-nghệ-phòng-vệ-5-tầng-khắc-phục-triệt-để-bài-toán-bắt-nhầm) |
+| **6** | Chiến lược chống bắt nhầm | Bắt nhầm người thật (FP) là rủi ro chí mạng trong pháp lý và bảo mật. | Xây dựng **Hệ thống phòng vệ 5 tầng**: Ngưỡng tối ưu $\tau^* = 0.540$, Asymmetric Loss ($w_{\text{real}}=3.2$), Ensemble Fusion, Hard Negatives, Vùng nghi vấn. | Cell 6 Notebook, [docs/planning/SUPERVISOR_FEEDBACK_PLANNING.md §7](../planning/SUPERVISOR_FEEDBACK_PLANNING.md#7-chiến-lược-công-nghệ-phòng-vệ-5-tầng-khắc-phục-triệt-để-bài-toán-bắt-nhầm) |
 | **7** | V3 + LoRA chưa biết signal | LoRA hoạt động như hộp đen, chưa chứng minh được có học shortcut nhiễu hay không. | Khung XAI đa miền: ELA ($Q=90$), Phổ 2D FFT, Attention Saliency `[CLS]`, Stress test nén JPEG $Q=60$ chứng minh bắt đúng ngữ nghĩa toàn cục. | [src/experiments/visualize_lora_signals.py](../../src/experiments/visualize_lora_signals.py), [Gallery PNG](../../experiments/plots/lora_signal_attribution_gallery.png) |
 
 ---

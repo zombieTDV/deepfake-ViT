@@ -114,9 +114,23 @@ def generate_signal_attribution_gallery():
 
     # Load DINOv3 ViT-Plus A1
     ckpt_path = PROJECT_ROOT / "experiments/checkpoints/plus_v3_s1_best.pt"
+    if not ckpt_path.exists():
+        print("=" * 70)
+        print(f"❌ PREREQUISITE ERROR: Checkpoint file not found: {ckpt_path.relative_to(PROJECT_ROOT)}")
+        print("\n💡 Instructions to obtain model weights:")
+        print("   1. Fine-tuned model checkpoints are published on Hugging Face Hub:")
+        print("      Repository: https://huggingface.co/ManhQuangAI/dinov3-deepfake-detection")
+        print("   2. Download plus_v3_s1_best.pt and place it into experiments/checkpoints/:")
+        print("      mkdir -p experiments/checkpoints")
+        print("      curl -L -o experiments/checkpoints/plus_v3_s1_best.pt <URL>")
+        print("=" * 70)
+        return
+
     print(f"Loading model from {ckpt_path}...")
-    
-    ck_vit = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+    try:
+        ck_vit = torch.load(ckpt_path, map_location="cpu", weights_only=True)
+    except Exception:
+        ck_vit = torch.load(ckpt_path, map_location="cpu", weights_only=False)
     state_dict_vit = ck_vit["state_dict"] if isinstance(ck_vit, dict) and "state_dict" in ck_vit else (ck_vit["model_state_dict"] if isinstance(ck_vit, dict) and "model_state_dict" in ck_vit else ck_vit)
     from src.models.dinov3_vit import DinoViT, DinoViTClassifier
     is_gated = any("gate_proj" in k for k in state_dict_vit.keys())
@@ -135,6 +149,14 @@ def generate_signal_attribution_gallery():
         all_fakes = list((PROJECT_ROOT / "data").glob("**/deep-fake-face-swap/**/*.jpg"))
         real_path = all_reals[0] if all_reals else real_path
         fake_path = all_fakes[0] if all_fakes else fake_path
+
+    if not real_path.exists() or not fake_path.exists():
+        print("=" * 70)
+        print("❌ PREREQUISITE ERROR: Sample test images not found for XAI visualization.")
+        print("   Expected: FaceForensics++ real frame and deep-fake-face-swap fake image.")
+        print("💡 Please download test_data_v3 from: https://huggingface.co/ManhQuangAI/df40-test-data-v3")
+        print("=" * 70)
+        return
 
     print(f"Real Image: {real_path.name}")
     print(f"Fake Image: {fake_path.name}")

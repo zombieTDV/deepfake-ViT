@@ -55,14 +55,12 @@ flowchart TD
         P_Train["Tập Train (129,884 imgs)<br/>train_v5_weakfix_v3.csv<br/>31,006 Real : 98,878 Fake (1 : 3.19)"]
         P_Val["Tập Validation (6,000 imgs)<br/>val_v5_combined_universal.csv<br/>3,000 Real : 3,000 Fake (Cân bằng 1:1)"]
         P_Test_Bal["Tập Test Balanced (21,446 imgs)<br/>test_coursework_44methods_balanced.csv<br/>10,723 Real : 10,723 Fake (~300/method)"]
-        P_Test_Full["Tập Test Full Suite (50,084 imgs)<br/>test_coursework_44methods_full.csv<br/>25,042 Real : 25,042 Fake"]
     end
 
     Raw_Assets --> Firewall
     Firewall --> P_Train
     Firewall --> P_Val
     Firewall --> P_Test_Bal
-    Firewall --> P_Test_Full
 ```
 
 ### Bảng Thống kê Tổng Điều tra Phân hoạch (Master Split Census)
@@ -72,7 +70,6 @@ flowchart TD
 | **Train v5 WeakFix v3** | [`data/splits/train_v5_weakfix_v3.csv`](../data/splits/train_v5_weakfix_v3.csv) | **129,884** | 31,006 | 98,878 | **1 : 3.19** *(Mất cân bằng)* | Huấn luyện mô hình, cập nhật weights/LoRA adapters |
 | **Validation v5 Trio** | [`data/splits/val_v5_combined_universal_kaggle_boost.csv`](../data/splits/val_v5_combined_universal_kaggle_boost.csv) | **6,000** | 3,000 | 3,000 | **1.00 : 1.00** *(Cân bằng)* | Tối ưu Hyperparameters, hiệu chuẩn ngưỡng $\tau^*$, tuyển chọn Checkpoint |
 | **Test Balanced (Chính thức)** | [`test_coursework_44methods_balanced_zero_leakage.csv`](../data/splits/test_coursework_44methods_balanced_zero_leakage.csv) | **21,446** | 10,723 | 10,723 | **1.00 : 1.00** *(Cân bằng tuyệt đối)* | Đánh giá Benchmark không thiên lệch, ~300 ảnh/phương pháp |
-| **Test Full Suite (Mở rộng)** | [`test_coursework_44methods_full_zero_leakage.csv`](../data/splits/test_coursework_44methods_full_zero_leakage.csv) | **50,084** | 25,042 | 25,042 | **1.00 : 1.00** *(Cân bằng quy mô lớn)* | Đo lường độ ổn định phương sai trên tập dữ liệu lớn |
 
 ---
 
@@ -98,7 +95,7 @@ flowchart TD
   - Độ sâu trường ảnh nông (bokeh hậu cảnh), kết cấu lỗ chân lông, sợi lông mi, nếp nhăn vi mô cực kỳ sắc nét.
   - Phổ Fourier 2D suy giảm đều theo quy luật luỹ thừa tự nhiên ($1/f^\alpha$ với $\alpha \approx 2$).
   - Phản xạ ánh sáng giác mạc (corneal reflections) thể hiện rõ hình dạng nguồn sáng thực (softbox, cửa sổ).
-- **Quy mô trong dự án**: 10,000 ảnh (Train), 1,532 ảnh (Test Balanced), 3,576 ảnh (Test Full).
+- **Quy mô trong dự án**: 10,000 ảnh (Train), 1,532 ảnh (Test Balanced).
 
 ### 2.2. Celeb-DF v2 Real
 - **Xuất xứ & Bản quyền**: Yuezun Li et al., CVPR 2020 (State University of New York at Albany).
@@ -106,7 +103,7 @@ flowchart TD
 - **Đặc trưng vật lý & Quang học**:
   - Chuyển động cơ mặt tự nhiên, chớp mắt sinh học, thay đổi góc nhìn đầu liên tục.
   - Nhiễu nén video chuẩn H.264 tiêu chuẩn phát sóng truyền hình, có hiện tượng motion blur nhẹ ở viền môi và mi mắt khi cử động nhanh.
-- **Quy mô trong dự án**: 3,006 ảnh (Train), 1,532 ảnh (Test Balanced), 3,578 ảnh (Test Full).
+- **Quy mô trong dự án**: 3,006 ảnh (Train), 1,532 ảnh (Test Balanced).
 
 ### 2.3. FaceForensics++ (FF++) Real
 - **Xuất xứ & Bản quyền**: Technical University of Munich (Andreas Rössler et al., ICCV 2019).
@@ -114,32 +111,32 @@ flowchart TD
 - **Đặc trưng vật lý & Quang học**:
   - Cấu trúc khung hình chuẩn hóa, góc nhìn camera tĩnh hoặc lia chậm.
   - Mang dấu vết khối macroblock $8 \times 8$ hoặc $16 \times 16$ của chuẩn nén MPEG/H.264, tạo ra sự phân bố lỗi nén ELA đặc trưng ở mức chất lượng trung bình.
-- **Quy mô trong dự án**: 4,000 ảnh (Train), 1,532 ảnh (Test Balanced), 3,578 ảnh (Test Full).
+- **Quy mô trong dự án**: 4,000 ảnh (Train), 1,532 ảnh (Test Balanced).
 
 ### 2.4. CelebV-HQ
 - **Xuất xứ & Bản quyền**: Wuhan University & NTU Singapore (Hao Zhu et al., ECCV 2022).
 - **Cách thức thu thập & Tạo dựng**: 35,666 đoạn video chất lượng cao thu thập từ YouTube với độ phân giải tối thiểu $512 \times 512$ và $1024 \times 1024$.
 - **Đặc trưng vật lý & Quang học**:
   - Đa dạng bậc nhất về biểu cảm (vui, buồn, giận dữ, ngạc nhiên), góc nghiêng (yaw $\pm 45^\circ$, pitch $\pm 30^\circ$) và điều kiện ánh sáng (ánh sáng ban ngày, ánh sáng đèn neon đường phố, ánh sáng studio).
-- **Quy mô trong dự án**: 8,000 ảnh (Train), 1,532 ảnh (Test Balanced), 3,578 ảnh (Test Full).
+- **Quy mô trong dự án**: 8,000 ảnh (Train), 1,532 ảnh (Test Balanced).
 
 ### 2.5. CelebA-HQ
 - **Xuất xứ & Bản quyền**: The Chinese University of Hong Kong & Nvidia (Tero Karras et al., ICLR 2018).
 - **Cách thức thu thập & Tạo dựng**: Lấy từ tập CelebA gốc (202,599 ảnh chân dung tự nhiên), áp dụng pipeline phục hồi siêu phân giải dựa trên Progressive Growing GAN kết hợp nắn chỉnh thủ công để tạo ra 30,000 ảnh $1024 \times 1024$.
 - **Đặc trưng vật lý & Quang học**: Đa dạng về phụ kiện (kính, mũ, hoa tai, khăn choàng), góc nhìn "in-the-wild" thực tế nhưng có bề mặt da tương đối nhẵn mịn do bước phục hồi hình ảnh ban đầu.
-- **Quy mô trong dự án**: 4,000 ảnh (Train), 1,532 ảnh (Test Balanced), 3,578 ảnh (Test Full).
+- **Quy mô trong dự án**: 4,000 ảnh (Train), 1,532 ảnh (Test Balanced).
 
 ### 2.6. VGGFace2 Cleaned
 - **Xuất xứ & Bản quyền**: Visual Geometry Group, Oxford University (Qiong Cao et al., FG 2018).
 - **Cách thức thu thập & Tạo dựng**: Thu thập qua Google Image Search từ 9,131 danh tính với sự biến động lớn về độ tuổi, tư thế khuôn mặt, biểu cảm và độ phân giải gốc.
 - **Đặc trưng vật lý & Quang học**: Độ phân giải nguyên thủy đa dạng (từ thấp đến cao), phổ nhiễu ISO máy ảnh phong phú, tỷ lệ tương phản động lớn (nhiều ảnh ngược sáng hoặc đổ bóng gắt).
-- **Quy mô trong dự án**: 1,000 ảnh (Train), 1,532 ảnh (Test Balanced), 3,578 ảnh (Test Full).
+- **Quy mô trong dự án**: 1,000 ảnh (Train), 1,532 ảnh (Test Balanced).
 
 ### 2.7. SFHQ (Synthetic Face HQ - Pristine Real Subset)
 - **Xuất xứ & Bản quyền**: Self-curated Studio Faces (2023).
 - **Cách thức thu thập & Tạo dựng**: Ảnh chụp chân dung phong cách studio trung tính, phông nền xám đơn sắc, ánh sáng đèn tròn (ring-light) trực diện.
 - **Đặc trưng vật lý & Quang học**: Không có phụ kiện phức tạp, sắc thái trung tính, đóng vai trò là "chất thử chuẩn mực" để kiểm tra xem mô hình có bị báo động giả trên các bức ảnh quá mịn hay không.
-- **Quy mô trong dự án**: 1,000 ảnh (Train), 1,531 ảnh (Test Balanced), 3,576 ảnh (Test Full).
+- **Quy mô trong dự án**: 1,000 ảnh (Train), 1,531 ảnh (Test Balanced).
 
 ---
 

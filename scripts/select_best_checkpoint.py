@@ -50,12 +50,22 @@ def run_checkpoint_selection():
         "ConvNeXt-Tiny": 0.083,
     }
 
-    metrics_summary = {}
+    missing_files = [path for path in ckpt_files.values() if not path.exists()]
+    if missing_files:
+        print("=" * 70)
+        print("❌ PREREQUISITE ERROR: Required prediction feature caches (.npz) not found:")
+        for mf in missing_files:
+            print(f"   • Missing: {mf.relative_to(PROJECT_ROOT)}")
+        print("\n💡 Instructions to obtain evaluation predictions:")
+        print("   1. Prediction caches are generated from the checkpoint evaluation pipeline:")
+        print("      python src/eval/eval_checkpoint.py --split test_balanced")
+        print("   2. Or download the published benchmark evaluations from Hugging Face:")
+        print("      Repository: https://huggingface.co/ManhQuangAI/df40-test-data-v3")
+        print("   3. Once downloaded, place the .npz files in their respective folders under experiments/results/.")
+        print("=" * 70)
+        return
 
     for name, path in ckpt_files.items():
-        if not path.exists():
-            print(f"⚠️ Warning: {path} not found!")
-            continue
         data = np.load(path)
         y_true = data["labels"]
         probs = data["probs"]
