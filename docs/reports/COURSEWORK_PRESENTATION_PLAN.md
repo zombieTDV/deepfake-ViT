@@ -56,7 +56,7 @@ Memorize or keep these core statistics visible during your defense:
 | **Architectural Parity Delta**| **+2.58%** | Controlled parameter parity (<3% delta) isolates inductive bias effects. |
 | **ViT-Plus A1 Performance** | **99.86% AUC** | **98.53% Accuracy** (Only 100 missed fakes across 10.4k test fakes). |
 | **ConvNeXt Performance** | **99.99% AUC** | **99.49% Accuracy** (Only 22 false alarms across 10.4k real faces). |
-| **Joint Weighted Ensemble** | **99.97% AUC** | **99.28% Accuracy** (0.65 ViT + 0.35 CNN late fusion; only 55 missed fakes). |
+| **Dual Decision Protocol** | **Independent Evaluation** | ViT-Plus for global context & diffusion; ConvNeXt for local blending artifacts. |
 | **Optimal Threshold** | **$\tau^* = 0.50$** | Perfect calibration curve without artificial class bias. |
 | **Easiest Methods (>98%)** | FaceDancer, FaceVid2Vid | Temporal and spatial boundary warping easily caught. |
 | **Hardest Methods (<80%)** | MidJourney v5, CollabDiff | Diffusion inpainting preserves photorealistic texture. |
@@ -106,8 +106,8 @@ Open [`notebooks/final_coursework_report.ipynb`](../final_coursework_report.ipyn
 >    - **Classification Head (0.30M params)**: LayerNorm(768) $\to$ Dropout(0.2) $\to$ Linear(768, 384) $\to$ GELU $\to$ Dropout(0.1) $\to$ Linear(384, 2), projecting into the same 384-d latent bottleneck before binary classification.
 >    - **Inductive Bias**: Local translation equivariance, making it exceptionally sharp at catching high-frequency pixel blending boundaries and GAN checkerboard artifacts.
 >
-> 3. **Joint Weighted Late Fusion Ensemble**:
->    We fuse predictions via $\hat{P}_{\text{Ensemble}} = 0.65 P_{\text{ViT}} + 0.35 P_{\text{ConvNeXt}}$. The 0.65 weight grants priority to ViT's superior generalization against novel diffusion generators, while leveraging ConvNeXt's localized precision to suppress false alarms on authentic photography."*
+> 3. **Dual-Branch Comparative Evaluation & Capacity Parity**:
+>    Both models are evaluated independently under exact parameter parity (<2.6% parameter delta). This controlled setting directly isolates inductive bias: ViT's self-attention models long-range anatomical consistency, while ConvNeXt's depthwise kernels capture high-frequency blending boundaries."*
 
 ### Act IV: Empirical Results & 44-Method Ranking (8:00 - 11:30)
 *Scroll to Cell 11, 12, 14, 16 (`Section 6, 7 & 8`)*
@@ -115,7 +115,7 @@ Open [`notebooks/final_coursework_report.ipynb`](../final_coursework_report.ipyn
 > On the 21.4k balanced test set across all 44 methods:
 > - **DINOv3 ViT-Plus A1 achieved outstanding performance at 99.86% ROC-AUC and 98.53% Accuracy, with only 100 false negatives.**
 > - **ConvNeXt-Tiny achieved 99.99% AUC and 99.49% Accuracy, with an unprecedented low 22 false alarms.**
-> - Combining them in a **Joint Weighted Ensemble reached 99.97% AUC and 99.28% Accuracy, cutting missed fakes to just 55 frames.**
+> - Both architectures exhibit strong generalization independently, providing distinct forensic profiles across artifact modalities.
 >
 > Looking at the 44-method horizontal rankings in Cell 14:
 > - Reenactment methods like FaceDancer and FaceVid2Vid are detected with **over 98.5% accuracy**.
@@ -139,7 +139,7 @@ Open [`notebooks/final_coursework_report.ipynb`](../final_coursework_report.ipyn
 > *"To conclude:
 > 1. Certified zero-leakage is mandatory for real-world benchmarking.
 > 2. ViT excels at global contextual diffusion detection, while ConvNeXt is vital for local GAN boundary seams.
-> 3. An ensemble approach provides the most robust defense against the evolving 44-method landscape.
+> 3. Choosing between ViT or ConvNeXt depends on the forensic operational threat model: ConvNeXt for minimal false alarms, ViT for structural and diffusion anomaly detection.
 > Thank you, and I am now ready for the committee's questions."*
 
 ---

@@ -1,18 +1,23 @@
 """
 Generate crisp, publication-grade architectural PNG diagrams corresponding to all Mermaid diagrams.
-Saves to: experiments/results/diagrams/
-1. diagram1_forensics_pipeline.png
-2. diagram2_artifact_scale_decision.png
-3. diagram3_data_regime_scaling.png
+Saves to:
+  - experiments/results/diagrams/diagram1_forensics_pipeline.png
+  - docs/reports/figures/model_architecture_diagram.png
+  - docs/reports/figures/forensic_signal_pipeline.png
+  - experiments/results/diagrams/diagram2_artifact_scale_decision.png
+  - experiments/results/diagrams/diagram3_data_regime_scaling.png
 """
 
 from pathlib import Path
+import shutil
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 REPO_ROOT = Path(r"C:\document\Study documents\deepfake-ViT")
 OUT_DIR = REPO_ROOT / "experiments" / "results" / "diagrams"
+DOCS_FIG_DIR = REPO_ROOT / "docs" / "reports" / "figures"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
+DOCS_FIG_DIR.mkdir(parents=True, exist_ok=True)
 
 plt.rcParams['font.sans-serif'] = 'DejaVu Sans'
 plt.rcParams['axes.edgecolor'] = '#bdc3c7'
@@ -26,93 +31,128 @@ DARK_TEXT = "#2c3e50"
 BORDER = "#bdc3c7"
 
 # -------------------------------------------------------------------------
-# DIAGRAM 1: End-to-End Forensics Pipeline
+# DIAGRAM 1: End-to-End Forensics Pipeline & Model Architecture (No Ensemble)
 # -------------------------------------------------------------------------
-fig, ax = plt.subplots(figsize=(10, 4.8), dpi=300)
-ax.set_xlim(0, 100)
+fig, ax = plt.subplots(figsize=(12, 5.2), dpi=300)
+ax.set_xlim(0, 105)
 ax.set_ylim(0, 50)
 ax.axis('off')
 
 # Title
-ax.text(50, 47.5, "End-to-End Deepfake Forensics Pipeline Architecture", 
+ax.text(52.5, 48.0, "End-to-End Dual Foundation Forensics Pipeline (Meta DINOv3 ViT vs. ConvNeXt)", 
         fontsize=12, fontweight='bold', ha='center', color=PRIMARY)
 
-# Box 1: Input
-b1 = patches.FancyBboxPatch((3, 16), 18, 18, boxstyle="round,pad=1", 
-                            fc=LIGHT_BG, ec=SECONDARY, lw=1.5)
+# Box 1: Input Facial Crop
+b1 = patches.FancyBboxPatch((2, 16.5), 18, 18, boxstyle="round,pad=1", 
+                            fc=LIGHT_BG, ec=PRIMARY, lw=1.5)
 ax.add_patch(b1)
-ax.text(12, 28, "Input Facial Crop", fontsize=9, fontweight='bold', ha='center', color=PRIMARY)
-ax.text(12, 24, "256x256x3 RGB", fontsize=8, ha='center', color=DARK_TEXT)
-ax.text(12, 20, "ImageNet Normalization", fontsize=7.5, ha='center', color="#7f8c8d")
+ax.text(11, 28.5, "Input Facial Crop", fontsize=9.5, fontweight='bold', ha='center', color=PRIMARY)
+ax.text(11, 24.5, "256x256x3 RGB", fontsize=8.5, ha='center', color=DARK_TEXT)
+ax.text(11, 20.5, "ImageNet Normalization", fontsize=7.5, ha='center', color="#7f8c8d")
+ax.text(11, 17.0, "Zero-Leakage Test Crop", fontsize=7, ha='center', color="#7f8c8d")
+
+vit_y = 28.5
+vit_h = 15.5
+vit_mid = vit_y + vit_h / 2.0  # 36.25
+
+cnn_y = 6.8
+cnn_h = 15.5
+cnn_mid = cnn_y + cnn_h / 2.0  # 14.55
 
 # Arrows from Input to Backbones
-ax.annotate("", xy=(28, 33), xytext=(21, 28),
-            arrowprops=dict(arrowstyle="->", color=SECONDARY, lw=1.5, mutation_scale=12))
-ax.annotate("", xy=(28, 17), xytext=(21, 22),
-            arrowprops=dict(arrowstyle="->", color=SECONDARY, lw=1.5, mutation_scale=12))
+ax.annotate("", xy=(25, vit_mid), xytext=(20, 29),
+            arrowprops=dict(arrowstyle="->", color=SECONDARY, lw=1.6, mutation_scale=12))
+ax.annotate("", xy=(25, cnn_mid), xytext=(20, 22),
+            arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.6, mutation_scale=12))
 
 # Box 2A: ViT Backbone
-b2a = patches.FancyBboxPatch((28, 25), 26, 16, boxstyle="round,pad=1", 
+b2a = patches.FancyBboxPatch((25, vit_y), 26, vit_h, boxstyle="round,pad=1", 
                              fc="#ebf5fb", ec=SECONDARY, lw=1.5)
 ax.add_patch(b2a)
-ax.text(41, 37, "Meta DINOv3 ViT-Plus A1", fontsize=9, fontweight='bold', ha='center', color=SECONDARY)
-ax.text(41, 33, "28.69M Params | Patch 16x16", fontsize=7.5, ha='center', color=DARK_TEXT)
-ax.text(41, 29, "12 Layers | 6 Heads | Dim 384", fontsize=7.5, ha='center', color=DARK_TEXT)
-ax.text(41, 26, "SwiGLU Gated MLP | SDPA", fontsize=7.5, fontweight='bold', ha='center', color=PRIMARY)
+ax.text(38, vit_y + 11.5, "Meta DINOv3 ViT-Plus A1", fontsize=9, fontweight='bold', ha='center', color=SECONDARY)
+ax.text(38, vit_y + 8.2, "28.69M Params | Patch 16x16", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(38, vit_y + 5.0, "12 Layers | 6 Heads | Dim 384", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(38, vit_y + 2.0, "SwiGLU Gated MLP | SDPA", fontsize=7.5, fontweight='bold', ha='center', color=PRIMARY)
 
 # Box 2B: ConvNeXt Backbone
-b2b = patches.FancyBboxPatch((28, 7), 26, 16, boxstyle="round,pad=1", 
+b2b = patches.FancyBboxPatch((25, cnn_y), 26, cnn_h, boxstyle="round,pad=1", 
                              fc="#eafaf1", ec=ACCENT, lw=1.5)
 ax.add_patch(b2b)
-ax.text(41, 19, "Meta DINOv3 ConvNeXt-Tiny", fontsize=9, fontweight='bold', ha='center', color=ACCENT)
-ax.text(41, 15, "28.12M Params | 4 Stages", fontsize=7.5, ha='center', color=DARK_TEXT)
-ax.text(41, 11, "Channels: [96, 192, 384, 768]", fontsize=7.5, ha='center', color=DARK_TEXT)
-ax.text(41, 8, "7x7 Depthwise Conv", fontsize=7.5, fontweight='bold', ha='center', color=PRIMARY)
+ax.text(38, cnn_y + 11.5, "Meta DINOv3 ConvNeXt-Tiny", fontsize=9, fontweight='bold', ha='center', color=ACCENT)
+ax.text(38, cnn_y + 8.2, "28.12M Params | 4 Stages", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(38, cnn_y + 5.0, "Channels: [96, 192, 384, 768]", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(38, cnn_y + 2.0, "7x7 Depthwise Conv | Inverted", fontsize=7.5, fontweight='bold', ha='center', color=PRIMARY)
 
 # Arrows from Backbones to Heads
-ax.annotate("", xy=(58, 33), xytext=(54, 33),
-            arrowprops=dict(arrowstyle="->", color=SECONDARY, lw=1.5, mutation_scale=12))
-ax.annotate("", xy=(58, 15), xytext=(54, 15),
-            arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.5, mutation_scale=12))
+ax.annotate("", xy=(56, vit_mid), xytext=(51, vit_mid),
+            arrowprops=dict(arrowstyle="->", color=SECONDARY, lw=1.6, mutation_scale=12))
+ax.annotate("", xy=(56, cnn_mid), xytext=(51, cnn_mid),
+            arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.6, mutation_scale=12))
 
 # Box 3A: ViT Head
-b3a = patches.FancyBboxPatch((58, 27), 16, 12, boxstyle="round,pad=1", 
-                             fc=LIGHT_BG, ec=SECONDARY, lw=1.2)
+b3a = patches.FancyBboxPatch((56, vit_y), 20, vit_h, boxstyle="round,pad=1", 
+                             fc=LIGHT_BG, ec=SECONDARY, lw=1.3)
 ax.add_patch(b3a)
-ax.text(66, 35, "2-Layer MLP Head", fontsize=8, fontweight='bold', ha='center', color=PRIMARY)
-ax.text(66, 31, "LayerNorm -> GELU", fontsize=7.5, ha='center', color=DARK_TEXT)
-ax.text(66, 28, "Linear(384, 2)", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(66, vit_y + 11.5, "2-Layer MLP Head", fontsize=8.5, fontweight='bold', ha='center', color=PRIMARY)
+ax.text(66, vit_y + 8.2, "LN(384) -> Drop(0.2)", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(66, vit_y + 5.0, "Linear(384, 384) -> GELU", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(66, vit_y + 2.0, "Linear(384, 2) | 149k Params", fontsize=7.5, fontweight='bold', ha='center', color=SECONDARY)
 
 # Box 3B: ConvNeXt Head
-b3b = patches.FancyBboxPatch((58, 9), 16, 12, boxstyle="round,pad=1", 
-                             fc=LIGHT_BG, ec=ACCENT, lw=1.2)
+b3b = patches.FancyBboxPatch((56, cnn_y), 20, cnn_h, boxstyle="round,pad=1", 
+                             fc=LIGHT_BG, ec=ACCENT, lw=1.3)
 ax.add_patch(b3b)
-ax.text(66, 17, "2-Layer MLP Head", fontsize=8, fontweight='bold', ha='center', color=PRIMARY)
-ax.text(66, 13, "LayerNorm -> GELU", fontsize=7.5, ha='center', color=DARK_TEXT)
-ax.text(66, 10, "Linear(768, 2)", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(66, cnn_y + 11.5, "2-Layer MLP Head", fontsize=8.5, fontweight='bold', ha='center', color=PRIMARY)
+ax.text(66, cnn_y + 8.2, "LN(768) -> Drop(0.2)", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(66, cnn_y + 5.0, "Linear(768, 384) -> GELU", fontsize=7.5, ha='center', color=DARK_TEXT)
+ax.text(66, cnn_y + 2.0, "Linear(384, 2) | 298k Params", fontsize=7.5, fontweight='bold', ha='center', color=ACCENT)
 
-# Arrows from Heads to Ensemble
-ax.annotate("", xy=(78, 27), xytext=(74, 31),
-            arrowprops=dict(arrowstyle="->", color=SECONDARY, lw=1.5, mutation_scale=12))
-ax.annotate("", xy=(78, 23), xytext=(74, 17),
-            arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.5, mutation_scale=12))
+# Arrows from Heads to Predictions
+ax.annotate("", xy=(81, vit_mid), xytext=(76, vit_mid),
+            arrowprops=dict(arrowstyle="->", color=SECONDARY, lw=1.6, mutation_scale=12))
+ax.annotate("", xy=(81, cnn_mid), xytext=(76, cnn_mid),
+            arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.6, mutation_scale=12))
 
-# Box 4: Ensemble
-b4 = patches.FancyBboxPatch((78, 13), 20, 24, boxstyle="round,pad=1", 
-                            fc="#f4ecf7", ec="#8e44ad", lw=1.8)
-ax.add_patch(b4)
-ax.text(88, 33, "Joint Weighted Ensemble", fontsize=8.5, fontweight='bold', ha='center', color="#8e44ad")
-ax.text(88, 29, "P = 0.65·ViT + 0.35·CNN", fontsize=7.5, fontweight='bold', ha='center', color=PRIMARY)
-ax.text(88, 25, "Test Acc: 99.28%", fontsize=8, fontweight='bold', ha='center', color=ACCENT)
-ax.text(88, 21.5, "ROC-AUC: 99.97%", fontsize=8, fontweight='bold', ha='center', color=SECONDARY)
-ax.text(88, 18, "Fake Recall: 99.47%", fontsize=7.5, fontweight='bold', ha='center', color="#8e44ad")
-ax.text(88, 14.5, "Latency: 13.36 ms", fontsize=7, ha='center', color=DARK_TEXT)
+# Box 4A: ViT Prediction
+b4a = patches.FancyBboxPatch((81, vit_y), 22, vit_h, boxstyle="round,pad=1", 
+                             fc="#ebf5fb", ec=SECONDARY, lw=1.6)
+ax.add_patch(b4a)
+ax.text(92, vit_y + 11.5, "ViT Binary Prediction", fontsize=8.5, fontweight='bold', ha='center', color=SECONDARY)
+ax.text(92, vit_y + 8.2, "P(Fake | X) >= 0.50", fontsize=8, fontweight='bold', ha='center', color=PRIMARY)
+ax.text(92, vit_y + 5.0, "Test Acc: 98.53% | AUC: 99.86%", fontsize=7.5, fontweight='bold', ha='center', color=ACCENT)
+ax.text(92, vit_y + 2.0, "Fake Recall: 99.04% (FN=100)", fontsize=7.5, ha='center', color=DARK_TEXT)
+
+# Box 4B: ConvNeXt Prediction
+b4b = patches.FancyBboxPatch((81, cnn_y), 22, cnn_h, boxstyle="round,pad=1", 
+                             fc="#eafaf1", ec=ACCENT, lw=1.6)
+ax.add_patch(b4b)
+ax.text(92, cnn_y + 11.5, "CNN Binary Prediction", fontsize=8.5, fontweight='bold', ha='center', color=ACCENT)
+ax.text(92, cnn_y + 8.2, "P(Fake | X) >= 0.50", fontsize=8, fontweight='bold', ha='center', color=PRIMARY)
+ax.text(92, cnn_y + 5.0, "Test Acc: 99.49% | AUC: 99.99%", fontsize=7.5, fontweight='bold', ha='center', color=ACCENT)
+ax.text(92, cnn_y + 2.0, "Real Spec: 99.79% (FP=22)", fontsize=7.5, ha='center', color=DARK_TEXT)
+
+# Capacity Parity Banner in center
+bp = patches.FancyBboxPatch((26, 23.7), 54, 3.2, boxstyle="round,pad=0.3",
+                            fc="#fef9e7", ec="#f39c12", lw=1.2)
+ax.add_patch(bp)
+ax.text(53, 24.8, "Controlled Capacity Parity (<2% Delta): ViT 28.69M vs. ConvNeXt 28.12M",
+        fontsize=8, fontweight='bold', ha='center', color="#b7950b")
 
 plt.tight_layout()
+
+# Save Diagram 1 to all target destinations
 p1 = OUT_DIR / "diagram1_forensics_pipeline.png"
+p1_model = DOCS_FIG_DIR / "model_architecture_diagram.png"
+p1_flow = DOCS_FIG_DIR / "forensic_signal_pipeline.png"
+
 plt.savefig(p1, bbox_inches='tight', dpi=300)
+shutil.copy2(p1, p1_model)
+shutil.copy2(p1, p1_flow)
 plt.close()
+
 print(f"Generated: {p1}")
+print(f"Copied to: {p1_model}")
+print(f"Copied to: {p1_flow}")
 
 
 # -------------------------------------------------------------------------
@@ -211,8 +251,3 @@ p3 = OUT_DIR / "diagram3_data_regime_scaling.png"
 plt.savefig(p3, bbox_inches='tight', dpi=300)
 plt.close()
 print(f"Generated: {p3}")
-
-# Also write to repo scripts directory
-repo_script = REPO_ROOT / "scripts" / "generate_architecture_diagrams.py"
-repo_script.write_text(Path(__file__).read_text(encoding="utf-8"), encoding="utf-8")
-print(f"Also saved script to: {repo_script}")
